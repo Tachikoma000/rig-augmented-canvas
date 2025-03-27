@@ -1,0 +1,11 @@
+{
+	"id": "rig-augmented-canvas",
+	"name": "Rig Augmented Canvas",
+	"version": "1.0.0",
+	"minAppVersion": "1.0.0",
+	"description": "Enhance Obsidian Canvas with AI capabilities powered by Rig",
+	"author": "Tachi",
+	"authorUrl": "https://github.com/tachi",
+	"isDesktopOnly": true,
+	"css": ["styles.css"]
+}
