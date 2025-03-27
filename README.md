@@ -28,7 +28,7 @@ The plugin leverages the [Rig](https://github.com/0xPlaygrounds/rig) library to 
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/rig-augmented-canvas.git
+   git clone https://github.com/Tachikoma000/rig-augmented-canvas.git
    cd rig-augmented-canvas
    ```
 
