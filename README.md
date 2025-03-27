@@ -2,8 +2,6 @@
 
 Enhance Obsidian Canvas with AI capabilities powered by Rig.
 
-![Rig Augmented Canvas](rig-augmented-canvas/plugin/src/assets/arc_logo_mintgreen_on_black.png)
-
 ## Overview
 
 Rig Augmented Canvas is an Obsidian plugin that adds AI capabilities to the Canvas feature, allowing you to:
@@ -269,15 +267,3 @@ The plugin integrates with Obsidian by:
 - Creating custom nodes
 - Managing node connections
 - Handling node content
-
-## License
-
-[MIT License](LICENSE)
-
-## Support
-
-If you encounter any issues or have questions:
-
-1. Check the Troubleshooting section above
-2. Submit an issue on GitHub
-3. Contact the developers at [your-email@example.com]
