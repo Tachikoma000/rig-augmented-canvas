@@ -17,7 +17,7 @@ pub struct WasmFlashcard {
 
 #[wasm_bindgen]
 #[derive(Serialize)]
-struct PromptResponse {
+pub struct PromptResponse {
     response: String,
 }
 
@@ -35,12 +35,7 @@ impl WasmRigService {
         #[cfg(feature = "console_error_panic_hook")]
         console_error_panic_hook::set_once();
 
-        let config = ModelConfig {
-            provider: ModelProvider::OpenAI,
-            model_name: "o3-mini".to_string(),
-            api_key_env: Some("OPENAI_API_KEY".to_string()),
-            base_url: None,
-        };
+        let config = ModelConfig::new();
 
         // Check if an API key is available in the environment
         let has_api_key = crate::models::has_api_key(&config, None);
@@ -71,8 +66,8 @@ impl WasmRigService {
 
     // Update model configuration
     pub fn update_model_config(&mut self, config_json: String) -> Result<(), JsValue> {
-        let config: ModelConfig =
-            serde_json::from_str(&config_json).map_err(|e| JsValue::from_str(&e.to_string()))?;
+        let config: ModelConfig = serde_json::from_str(config_json.clone().as_ref())
+            .map_err(|e| JsValue::from_str(&e.to_string()))?;
 
         self.config = config;
         Ok(())

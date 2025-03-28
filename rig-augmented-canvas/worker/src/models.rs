@@ -14,21 +14,13 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ModelConfig {
-    pub provider: ModelProvider,     // The AI provider (e.g., OpenAI)
-    pub model_name: String,          // The specific model to use (e.g., "o3-mini")
+    pub provider: ModelProvider, // The AI provider (e.g., OpenAI)
+    #[wasm_bindgen(getter_with_clone)]
+    pub model_name: String, // The specific model to use (e.g., "o3-mini")
+    #[wasm_bindgen(getter_with_clone)]
     pub api_key_env: Option<String>, // Environment variable name for the API key
-    pub base_url: Option<String>,    // Optional custom API endpoint
-}
-
-/**
- * Supported AI model providers.
- * Currently only OpenAI is implemented, but this enum allows for future expansion.
- */
-
-#[wasm_bindgen]
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub enum ModelProvider {
-    OpenAI,
+    #[wasm_bindgen(getter_with_clone)]
+    pub base_url: Option<String>, // Optional custom API endpoint
 }
 
 #[wasm_bindgen]
@@ -42,6 +34,17 @@ impl ModelConfig {
             base_url: None,
         }
     }
+}
+
+/**
+ * Supported AI model providers.
+ * Currently only OpenAI is implemented, but this enum allows for future expansion.
+ */
+
+#[wasm_bindgen]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub enum ModelProvider {
+    OpenAI,
 }
 
 /**

@@ -2,7 +2,7 @@
 name = "worker"
 version = "0.1.0"
 authors = ["Joshua Mo <joshua.mo.876@gmail.com>"]
-edition = "2018"
+edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
