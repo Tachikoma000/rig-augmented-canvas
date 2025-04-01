@@ -1,6 +1,11 @@
 import esbuild from "esbuild";
 import process from "process";
 import builtins from "builtin-modules";
+import pkg from 'esbuild-plugin-wasm-pack';
+import path from 'path';
+import fs from 'fs';
+
+const { wasmPack } = pkg;
 
 const banner =
 `/*
@@ -11,38 +16,72 @@ if you want to view the source, please visit the github repository of this plugi
 
 const prod = process.argv[2] === "production";
 
+// load WASM files - see https://github.com/evanw/esbuild/issues/408#issuecomment-699688651
+let wasmPlugin = {
+    name: 'wasm',
+    setup(build) {
+        // Resolve ".wasm" files to a path with a namespace
+        build.onResolve({ filter: /\.wasm$/ }, args => {
+            if (args.resolveDir === '') {
+                return // Ignore unresolvable paths
+            }
+            return {
+                path: path.isAbsolute(args.path) ? args.path : path.join(args.resolveDir, args.path),
+                namespace: 'wasm-binary',
+            }
+        })
+
+        // Virtual modules in the "wasm-binary" namespace contain the
+        // actual bytes of the WebAssembly file. This uses esbuild's
+        // built-in "binary" loader instead of manually embedding the
+        // binary data inside JavaScript code ourselves.
+        build.onLoad({ filter: /.*/, namespace: 'wasm-binary' }, async (args) => ({
+            contents: await fs.promises.readFile(args.path),
+            loader: 'binary',
+        }))
+    },
+}
+
 const context = await esbuild.context({
-	banner: {
-		js: banner,
-	},
-	entryPoints: ["src/main.ts"],
-	bundle: true,
-	external: [
-		"obsidian",
-		"electron",
-		"@codemirror/autocomplete",
-		"@codemirror/collab",
-		"@codemirror/commands",
-		"@codemirror/language",
-		"@codemirror/lint",
-		"@codemirror/search",
-		"@codemirror/state",
-		"@codemirror/view",
-		"@lezer/common",
-		"@lezer/highlight",
-		"@lezer/lr",
-		...builtins],
-	format: "cjs",
-	target: "es2018",
-	logLevel: "info",
-	sourcemap: prod ? false : "inline",
-	treeShaking: true,
-	outfile: "main.js",
+    banner: {
+        js: banner,
+    },
+    entryPoints: ["src/main.ts"],
+    bundle: true,
+    external: [
+        "obsidian",
+        "electron",
+        "@codemirror/autocomplete",
+        "@codemirror/collab",
+        "@codemirror/commands",
+        "@codemirror/language",
+        "@codemirror/lint",
+        "@codemirror/search",
+        "@codemirror/state",
+        "@codemirror/view",
+        "@lezer/common",
+        "@lezer/highlight",
+        "@lezer/lr",
+        ...builtins],
+    format: "cjs",
+    target: "es2018",
+    logLevel: "info",
+    sourcemap: prod ? false : "inline",
+    treeShaking: true,
+    outfile: "main.js",
+    plugins: [
+        wasmPlugin,
+        wasmPack({
+            target: 'web',
+            // Path to the Rust project root directory (where Cargo.toml is located)
+            path: '../',
+        }),
+    ],
 });
 
 if (prod) {
-	await context.rebuild();
-	process.exit(0);
+    await context.rebuild();
+    process.exit(0);
 } else {
-	await context.watch();
+    await context.watch();
 }

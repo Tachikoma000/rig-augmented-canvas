@@ -20,12 +20,18 @@ import {
     handleConnectedNodesPrompt
 } from "./canvas_patches";
 
+// Import the WebAssembly module
+// @ts-ignore - This will be resolved after building the WebAssembly module
+import * as wasm from "../../pkg/rig_augmented_canvas";
+// @ts-ignore - This will be resolved after building the WebAssembly module
+import wasmbin from "../../pkg/rig_augmented_canvas_bg.wasm";
+
 /**
  * Main plugin class that handles initialization, commands, and UI elements.
  */
 export default class RigAugmentedCanvasPlugin extends Plugin {
     settings: RigAugmentedCanvasSettings;  // Plugin settings
-    apiClient: RigApiClient;               // Client for communicating with the backend
+    apiClient: RigApiClient;               // Client for communicating with the WebAssembly module
     loadingIndicator: LoadingIndicator;    // UI element for showing loading state
     floatingButton: FloatingActionButton | null = null; // Floating action button for quick access
 
@@ -34,9 +40,24 @@ export default class RigAugmentedCanvasPlugin extends Plugin {
      * Initializes settings, API client, UI elements, and registers commands.
      */
     async onload() {
+        console.log("Loading Rig Augmented Canvas plugin");
+        
+        // Initialize WebAssembly module
+        try {
+            // Initialize the WebAssembly module
+            await wasm.default(Promise.resolve(wasmbin));
+            
+            // Register the onload function with the plugin
+            wasm.onload(this);
+            
+            console.log("WebAssembly module initialized");
+        } catch (error) {
+            console.error("Failed to initialize WebAssembly module:", error);
+        }
+        
         await this.loadSettings();
         
-        // Initialize API client for backend communication
+        // Initialize API client for WebAssembly communication
         this.apiClient = new RigApiClient(this.settings);
         
         // Initialize loading indicator for async operations
@@ -641,365 +662,7 @@ export default class RigAugmentedCanvasPlugin extends Plugin {
     transform: scale(1.1);
     background-color: var(--interactive-accent-hover);
 }
-
-/* User Guide Modal styles */
-.rig-user-guide-modal {
-    max-width: 1400px;
-    max-height: 85vh;
-    width: 95vw;
-}
-
-/* Fix for Obsidian modal width constraints */
-.modal-container .modal {
-    width: 95vw !important;
-    max-width: 1400px !important;
-}
-
-.rig-user-guide-title {
-    margin-top: 0;
-    margin-bottom: 20px;
-    text-align: center;
-    color: var(--text-accent);
-    font-size: 1.8em;
-    border-bottom: 2px solid var(--interactive-accent);
-    padding-bottom: 10px;
-}
-
-.rig-user-guide-container {
-    max-height: calc(85vh - 120px);
-    overflow-y: auto;
-    padding: 0 15px;
-    margin-bottom: 20px;
-}
-
-/* Section styling */
-.rig-guide-section {
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--background-modifier-border);
-}
-
-.rig-guide-section:last-child {
-    border-bottom: none;
-}
-
-.rig-guide-section-header {
-    display: flex;
-    align-items: center;
-    color: var(--text-accent);
-    font-size: 1.5em;
-    margin-bottom: 15px;
-}
-
-.rig-guide-section-icon {
-    margin-right: 10px;
-    color: var(--interactive-accent);
-}
-
-.rig-guide-section-content {
-    padding-left: 10px;
-}
-
-.rig-guide-subsection {
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
-.rig-guide-subsection h3 {
-    color: var(--text-accent);
-    font-size: 1.2em;
-    margin-bottom: 10px;
-}
-
-/* Feature cards */
-.rig-guide-feature-card {
-    background-color: var(--background-secondary);
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border-left: 4px solid var(--interactive-accent);
-}
-
-.rig-guide-feature-header {
-    display: flex;
-    align-items: center;
-    margin-top: 0;
-    margin-bottom: 10px;
-    color: var(--text-accent);
-}
-
-.rig-guide-feature-icon {
-    margin-right: 8px;
-    color: var(--interactive-accent);
-}
-
-.rig-guide-feature-description {
-    margin-bottom: 15px;
-}
-
-.rig-guide-feature-steps {
-    margin-bottom: 15px;
-}
-
-.rig-guide-feature-steps ol {
-    padding-left: 25px;
-    margin-top: 5px;
-}
-
-.rig-guide-feature-shortcut {
-    font-size: 0.9em;
-    padding: 5px 10px;
-    background-color: var(--background-primary);
-    border-radius: 4px;
-    display: inline-block;
-}
-
-/* Node types */
-.rig-guide-node-types {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-top: 15px;
-}
-
-.rig-guide-node-type {
-    flex: 1;
-    min-width: 200px;
-    padding: 15px;
-    border-radius: 8px;
-    background-color: var(--background-secondary);
-}
-
-.rig-guide-prompt-node {
-    border-left: 4px solid #10b981;
-}
-
-.rig-guide-question-node {
-    border-left: 4px solid #3b82f6;
-}
-
-.rig-guide-response-node {
-    border-left: 4px solid #8b5cf6;
-}
-
-.rig-guide-node-type h3 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    color: var(--text-accent);
-}
-
-.rig-guide-node-type ul {
-    padding-left: 20px;
-    margin: 0;
-}
-
-/* Button options */
-.rig-guide-button-options {
-    list-style: none;
-    padding-left: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.rig-guide-button-options li {
-    display: flex;
-    align-items: center;
-    background-color: var(--background-secondary);
-    padding: 8px 12px;
-    border-radius: 4px;
-    margin-bottom: 5px;
-}
-
-.rig-guide-option-icon {
-    margin-right: 8px;
-    color: var(--interactive-accent);
-}
-
-/* Shortcuts */
-.rig-guide-shortcuts {
-    list-style: none;
-    padding-left: 0;
-}
-
-.rig-guide-shortcuts li {
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-}
-
-.rig-guide-shortcut-key {
-    background-color: var(--background-secondary);
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 4px;
-    padding: 2px 6px;
-    margin-right: 8px;
-    font-family: monospace;
-    font-size: 0.9em;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-/* Settings table */
-.rig-guide-settings-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-.rig-guide-settings-table th,
-.rig-guide-settings-table td {
-    padding: 8px 12px;
-    text-align: left;
-    border-bottom: 1px solid var(--background-modifier-border);
-}
-
-.rig-guide-settings-table th {
-    background-color: var(--background-secondary);
-    color: var(--text-accent);
-}
-
-.rig-guide-setting-name {
-    font-weight: bold;
-    white-space: nowrap;
-}
-
-/* Tips */
-.rig-guide-tips {
-    margin-top: 15px;
-}
-
-.rig-guide-tip {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 10px;
-    padding: 8px 12px;
-    background-color: var(--background-secondary);
-    border-radius: 4px;
-}
-
-.rig-guide-tip-icon {
-    margin-right: 10px;
-    color: #10b981;
-    flex-shrink: 0;
-    margin-top: 2px;
-}
-
-.rig-guide-note {
-    margin-top: 20px;
-    padding: 10px 15px;
-    background-color: rgba(59, 130, 246, 0.1);
-    border-left: 4px solid var(--text-accent);
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-}
-
-.rig-guide-note-icon {
-    margin-right: 10px;
-    color: var(--text-accent);
-}
-
-/* Diagram styles */
-.rig-guide-diagram {
-    background-color: var(--background-secondary);
-    border-radius: 8px;
-    padding: 20px;
-    margin: 15px 0;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.rig-guide-diagram svg {
-    max-width: 100%;
-    height: auto;
-}
-
-.rig-guide-diagram-caption {
-    margin-top: 10px;
-    font-style: italic;
-    color: var(--text-muted);
-    font-size: 0.9em;
-}
-
-.rig-guide-diagram-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 20px;
-    margin: 20px 0;
-}
-
-/* Node styles for diagrams */
-.rig-diagram-node {
-    fill: var(--background-primary);
-    stroke: var(--background-modifier-border);
-    stroke-width: 1.5;
-    rx: 5;
-    ry: 5;
-}
-
-.rig-diagram-node-content {
-    font-size: 12px;
-    fill: var(--text-normal);
-    text-anchor: middle;
-    dominant-baseline: middle;
-}
-
-.rig-diagram-node-prompt {
-    stroke: #10b981;
-    stroke-width: 3;
-}
-
-.rig-diagram-node-question {
-    stroke: #3b82f6;
-    stroke-width: 3;
-}
-
-.rig-diagram-node-response {
-    stroke: #8b5cf6;
-    stroke-width: 3;
-}
-
-.rig-diagram-node-regular {
-    stroke: var(--background-modifier-border);
-    stroke-width: 1.5;
-}
-
-.rig-diagram-edge {
-    stroke: var(--text-muted);
-    stroke-width: 1.5;
-    fill: none;
-    marker-end: url(#arrowhead);
-}
-
-.rig-diagram-label {
-    font-size: 10px;
-    fill: var(--text-muted);
-    text-anchor: middle;
-}
-
-/* Footer */
-.rig-user-guide-footer {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.rig-user-guide-footer button {
-    background-color: var(--interactive-accent);
-    color: var(--text-on-accent);
-    border: none;
-    border-radius: 4px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    transition: background-color 0.2s;
-}
-
-.rig-user-guide-footer button:hover {
-    background-color: var(--interactive-accent-hover);
-}`;
+`;
         
         // Add to document head
         document.head.appendChild(styleEl);

@@ -21,8 +21,9 @@
     "@types/node": "^16.18.86",
     "builtin-modules": "^3.3.0",
     "esbuild": "^0.20.1",
+    "esbuild-plugin-wasm-pack": "^1.1.0",
     "obsidian": "latest",
-    "tslib": "^2.6.2",
+    "tslib": "^2.8.1",
     "typescript": "^5.8.2"
   },
   "dependencies": {

@@ -646,6 +646,11 @@ function generateId(): string {
  * @return The calculated height in pixels
  */
 function calculateHeight(text: string, width: number): number {
+    // Ensure text is defined before accessing its length
+    if (!text) {
+        return 100; // Default height if text is undefined
+    }
+    
     // Rough estimate: 20px per line, assuming ~5 chars per pixel
     const charsPerLine = width / 5;
     const lines = Math.ceil(text.length / charsPerLine);
