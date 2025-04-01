@@ -13,6 +13,7 @@ if you want to view the source, please visit the github repository of this plugi
 
 const prod = process.argv[2] === "production";
 
+// Main plugin build
 const context = await esbuild.context({
 	banner: {
 		js: banner,
@@ -42,14 +43,30 @@ const context = await esbuild.context({
 	outfile: "main.js",
 });
 
+// Worker wrapper build
+const workerContext = await esbuild.context({
+	banner: {
+		js: banner,
+	},
+	entryPoints: ["worker-wrapper.js"],
+	bundle: false, // Don't bundle, just transform
+	format: "esm",
+	target: "es2018",
+	logLevel: "info",
+	sourcemap: prod ? false : "inline",
+	outfile: "worker.js",
+});
+
 // Copy WASM files to the output directory
 async function copyWasmFiles() {
 	const wasmDir = "../worker/pkg";
-	const outputDir = "./worker";
+	const outputDirs = ["./worker", "."];
 	
-	// Create output directory if it doesn't exist
-	if (!fs.existsSync(outputDir)) {
-		fs.mkdirSync(outputDir, { recursive: true });
+	// Create output directories if they don't exist
+	for (const dir of outputDirs) {
+		if (!fs.existsSync(dir)) {
+			fs.mkdirSync(dir, { recursive: true });
+		}
 	}
 	
 	// Copy WASM and JS files
@@ -59,19 +76,24 @@ async function copyWasmFiles() {
 		file.endsWith(".ts")
 	);
 	
-	for (const file of filesToCopy) {
-		const sourcePath = path.join(wasmDir, file);
-		const destPath = path.join(outputDir, file);
-		fs.copyFileSync(sourcePath, destPath);
-		console.log(`Copied ${sourcePath} to ${destPath}`);
+	// Copy to each output directory
+	for (const outputDir of outputDirs) {
+		for (const file of filesToCopy) {
+			const sourcePath = path.join(wasmDir, file);
+			const destPath = path.join(outputDir, file);
+			fs.copyFileSync(sourcePath, destPath);
+			console.log(`Copied ${sourcePath} to ${destPath}`);
+		}
 	}
 }
 
 if (prod) {
 	await context.rebuild();
+	await workerContext.rebuild();
 	await copyWasmFiles();
 	process.exit(0);
 } else {
 	await context.watch();
+	await workerContext.watch();
 	await copyWasmFiles();
 }

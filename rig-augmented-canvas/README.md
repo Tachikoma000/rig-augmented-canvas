@@ -66,6 +66,36 @@ The plugin adds AI capabilities to Obsidian Canvas:
 - Ensure your browser supports WebAssembly (all modern browsers do)
 - Check that your OpenAI API key is valid
 
+#### "Failed to initialize WASM module" Error
+
+If you see an error like `Failed to initialize WASM module: Failed to load worker.js script`, it's likely due to the WASM files not being found. To fix this:
+
+1. Make sure the WASM files are in the correct location:
+   - The `worker.js` file should be in the root plugin directory
+   - The `worker_bg.wasm` file should be in the root plugin directory
+   - The `worker/` directory should contain copies of these files
+   - Your plugin directory structure should look like:
+     ```
+     rig-augmented-canvas/
+     ├── main.js
+     ├── manifest.json
+     ├── styles.css
+     ├── worker.js           # Main wrapper script in root
+     ├── worker_bg.wasm      # WASM binary file in root
+     └── worker/
+         ├── worker.js       # Original WASM JavaScript file
+         └── worker_bg.wasm  # Same WASM binary file
+     ```
+
+2. Make sure the plugin has permission to load external scripts. In some cases, you may need to:
+   - Restart Obsidian after installing the plugin
+   - Check your browser's console for any security-related warnings
+   - Ensure your Obsidian is up to date
+
+2. If you're building the plugin yourself, run `npm run build` in the plugin directory to ensure the WASM files are copied correctly.
+
+3. If you're installing manually, make sure to copy all the files from the build output, including both the root WASM files and the worker directory.
+
 ### HTTP Backend Mode
 
 If you prefer or need to use the HTTP backend:

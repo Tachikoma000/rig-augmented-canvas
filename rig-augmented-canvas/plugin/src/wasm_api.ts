@@ -39,15 +39,72 @@ export class WasmApiClient {
         try {
             this.logDebug("Initializing WASM module");
             
-            // Use dynamic import with a variable path to avoid TypeScript errors
-            const importPath = "../worker/worker.js";
-            this.wasmModule = await (Function('return import("' + importPath + '")')());
+            // In Obsidian, we need to use a more direct approach
+            // First, check if the global window object has our module
+            if (!(window as any).workerWasm) {
+                this.logDebug("Loading worker WASM module via script tag");
+                
+                // Create a promise that will resolve when the script is loaded and the module is ready
+                const loadPromise = new Promise<void>((resolve, reject) => {
+                    // Listen for the custom event that signals the module is loaded
+                    window.addEventListener('wasm-module-loaded', () => {
+                        this.logDebug("Received wasm-module-loaded event");
+                        resolve();
+                    }, { once: true });
+                    
+                    // Create a script element
+                    const script = document.createElement('script');
+                    script.src = 'worker.js';
+                    script.type = 'text/javascript';
+                    script.onload = () => {
+                        this.logDebug("Worker script loaded successfully");
+                        console.log("Worker script loaded successfully");
+                        // Note: We don't resolve here, we wait for the wasm-module-loaded event
+                    };
+                    script.onerror = (e) => {
+                        this.logDebug("Error loading worker script", e);
+                        console.error("Error loading worker script", e);
+                        reject(new Error("Failed to load worker.js script"));
+                    };
+                    
+                    // Add the script to the document
+                    document.head.appendChild(script);
+                    
+                    // Set a timeout in case the event never fires
+                    setTimeout(() => {
+                        if (!(window as any).workerWasm) {
+                            reject(new Error("Timed out waiting for WASM module to load"));
+                        } else {
+                            resolve(); // Module is available but event didn't fire
+                        }
+                    }, 30000); // 30 second timeout
+                });
+                
+                // Wait for the script to load and the module to be ready
+                await loadPromise;
+            }
+            
+            // Check if the module is now available
+            if (!(window as any).workerWasm) {
+                throw new Error("Worker WASM module not found after loading script");
+            }
+            
+            // Use the globally loaded module
+            this.wasmModule = (window as any).workerWasm;
             
             // Initialize the WASM module
+            this.logDebug("Initializing WASM module default function");
+            console.log("Initializing WASM module default function");
             await this.wasmModule.default();
+            this.logDebug("WASM module default function initialized");
+            console.log("WASM module default function initialized");
             
             // Create a new RigService instance
+            this.logDebug("Creating WasmRigService instance");
+            console.log("Creating WasmRigService instance");
             this.rigService = new this.wasmModule.WasmRigService();
+            this.logDebug("WasmRigService instance created");
+            console.log("WasmRigService instance created");
             
             this.isInitialized = true;
             this.logDebug("WASM module initialized successfully");
