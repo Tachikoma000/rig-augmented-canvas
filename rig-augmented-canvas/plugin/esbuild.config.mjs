@@ -1,6 +1,8 @@
 import esbuild from "esbuild";
 import process from "process";
 import builtins from "builtin-modules";
+import fs from "fs";
+import path from "path";
 
 const banner =
 `/*
@@ -40,9 +42,36 @@ const context = await esbuild.context({
 	outfile: "main.js",
 });
 
+// Copy WASM files to the output directory
+async function copyWasmFiles() {
+	const wasmDir = "../worker/pkg";
+	const outputDir = "./worker";
+	
+	// Create output directory if it doesn't exist
+	if (!fs.existsSync(outputDir)) {
+		fs.mkdirSync(outputDir, { recursive: true });
+	}
+	
+	// Copy WASM and JS files
+	const filesToCopy = fs.readdirSync(wasmDir).filter(file => 
+		file.endsWith(".wasm") || 
+		file.endsWith(".js") || 
+		file.endsWith(".ts")
+	);
+	
+	for (const file of filesToCopy) {
+		const sourcePath = path.join(wasmDir, file);
+		const destPath = path.join(outputDir, file);
+		fs.copyFileSync(sourcePath, destPath);
+		console.log(`Copied ${sourcePath} to ${destPath}`);
+	}
+}
+
 if (prod) {
 	await context.rebuild();
+	await copyWasmFiles();
 	process.exit(0);
 } else {
 	await context.watch();
+	await copyWasmFiles();
 }

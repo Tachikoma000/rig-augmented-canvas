@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting } from "obsidian";
+import { App, Notice, PluginSettingTab, Setting } from "obsidian";
 import RigAugmentedCanvasPlugin from "./main";
 
 export interface RigAugmentedCanvasSettings {
@@ -47,12 +47,26 @@ export class SettingsTab extends PluginSettingTab {
         containerEl.empty();
 
         new Setting(containerEl)
+            .setName("Use WebAssembly")
+            .setDesc("Use WebAssembly for AI processing instead of HTTP backend. When enabled, no local server is required.")
+            .addToggle(component => {
+                component
+                    .setValue(this.plugin.settings.useWasm)
+                    .onChange(async (value) => {
+                        this.plugin.settings.useWasm = value;
+                        await this.plugin.saveSettings();
+                        // Show a notice to reload the plugin
+                        new Notice("Please reload Obsidian for the change to take effect.");
+                    });
+            });
+
+        new Setting(containerEl)
             .setName("Backend URL")
-            .setDesc("The URL of the Rig-Augmented Canvas backend service")
+            .setDesc("The URL of the Rig-Augmented Canvas backend service (only used when WebAssembly is disabled)")
             .addText(text => text
                 .setPlaceholder("http://localhost:3000")
                 .setValue(this.plugin.settings.backendUrl)
-                .onChange(async (value) => {
+                .onChange(async (value: string) => {
                     this.plugin.settings.backendUrl = value;
                     await this.plugin.saveSettings();
                 }));

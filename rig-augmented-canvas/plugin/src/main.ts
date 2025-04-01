@@ -7,6 +7,7 @@ import { Plugin, Notice, setIcon, WorkspaceLeaf } from "obsidian";
 import { DEFAULT_SETTINGS, RigAugmentedCanvasSettings } from "./types";
 import { SettingsTab } from "./settings";
 import { RigApiClient } from "./api";
+import { WasmApiClient } from "./wasm_api";
 import { LoadingIndicator } from "./ui/loading_indicator";
 import { FloatingActionButton } from "./ui/floating_action_button";
 import { UserGuideModal } from "./ui/user_guide_modal";
@@ -25,7 +26,7 @@ import {
  */
 export default class RigAugmentedCanvasPlugin extends Plugin {
     settings: RigAugmentedCanvasSettings;  // Plugin settings
-    apiClient: RigApiClient;               // Client for communicating with the backend
+    apiClient: RigApiClient | WasmApiClient; // Client for communicating with the backend
     loadingIndicator: LoadingIndicator;    // UI element for showing loading state
     floatingButton: FloatingActionButton | null = null; // Floating action button for quick access
 
@@ -36,8 +37,14 @@ export default class RigAugmentedCanvasPlugin extends Plugin {
     async onload() {
         await this.loadSettings();
         
-        // Initialize API client for backend communication
-        this.apiClient = new RigApiClient(this.settings);
+        // Initialize API client based on settings
+        if (this.settings.useWasm) {
+            // Use WASM API client
+            this.apiClient = new WasmApiClient(this.settings);
+        } else {
+            // Use HTTP API client
+            this.apiClient = new RigApiClient(this.settings);
+        }
         
         // Initialize loading indicator for async operations
         this.loadingIndicator = new LoadingIndicator();

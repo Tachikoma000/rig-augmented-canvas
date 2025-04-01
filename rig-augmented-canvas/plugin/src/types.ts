@@ -9,7 +9,14 @@
  */
 export interface RigAugmentedCanvasSettings {
     /**
+     * Whether to use WebAssembly for AI processing instead of HTTP backend
+     * When enabled, no local server is required
+     */
+    useWasm: boolean;
+    
+    /**
      * The URL of the backend service
+     * Only used when useWasm is false
      * Default: http://localhost:3000
      */
     backendUrl: string;
@@ -62,6 +69,7 @@ export interface RigAugmentedCanvasSettings {
  * Used when the plugin is first installed or reset.
  */
 export const DEFAULT_SETTINGS: RigAugmentedCanvasSettings = {
+    useWasm: true,
     backendUrl: "http://localhost:3000",
     systemPrompt: "You are a helpful assistant.",
     flashcardsFolder: "Flashcards",
