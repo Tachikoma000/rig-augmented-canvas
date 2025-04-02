@@ -160,7 +160,21 @@ cargo build --release
 
 ## Installation
 
-### Installing in Obsidian
+### Installing with BRAT (Recommended)
+
+The easiest way to install Rig Augmented Canvas is using the BRAT (Beta Reviewer's Auto-update Tool) plugin for Obsidian.
+
+1. Install the [BRAT plugin](https://github.com/TfTHacker/obsidian42-brat) from the Obsidian Community Plugins
+2. In BRAT settings, add the plugin using "Add Beta plugin with frozen version based on a release tag"
+3. Enter `Tachikoma000/rig-augmented-canvas` as the repository
+4. Specify the latest version tag (e.g., `1.0.0`)
+5. Enable the plugin in Obsidian's Community Plugins settings
+
+For detailed step-by-step instructions, see the [INSTALLATION.md](INSTALLATION.md) guide.
+
+### Manual Installation
+
+If you prefer to install the plugin manually:
 
 1. Create a directory for the plugin in your Obsidian vault:
    ```
