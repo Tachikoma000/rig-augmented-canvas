@@ -63,3 +63,34 @@ When new versions of Rig Augmented Canvas are released:
 4. In the BRAT settings, find Rig Augmented Canvas in the list of beta plugins
 5. Click the "Check for updates" button
 6. If an update is available, BRAT will download and install it automatically
+
+## For Plugin Developers
+
+If you're developing or building this plugin, follow these additional steps to ensure WebAssembly compatibility with BRAT:
+
+1. Build the plugin as usual:
+   ```bash
+   cd plugin
+   npm run build
+   ```
+
+2. Copy the necessary files to the root directory:
+   ```bash
+   cp plugin/main.js .
+   cp plugin/styles.css .
+   cp -r pkg/* pkg/
+   ```
+
+3. Fix the WebAssembly paths in the main.js file:
+   ```bash
+   node fix-wasm-paths.js
+   ```
+
+4. Create a zip file for the release:
+   ```bash
+   zip -r rig-augmented-canvas.zip main.js manifest.json styles.css pkg/
+   ```
+
+5. Create a new GitHub release with the zip file as an asset
+
+This ensures that the WebAssembly module can be properly loaded when the plugin is installed via BRAT.
