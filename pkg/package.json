@@ -1,0 +1,18 @@
+{
+  "name": "rig-augmented-canvas",
+  "type": "module",
+  "collaborators": [
+    "Tachi"
+  ],
+  "version": "0.1.0",
+  "files": [
+    "rig_augmented_canvas_bg.wasm",
+    "rig_augmented_canvas.js",
+    "rig_augmented_canvas.d.ts"
+  ],
+  "main": "rig_augmented_canvas.js",
+  "types": "rig_augmented_canvas.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
