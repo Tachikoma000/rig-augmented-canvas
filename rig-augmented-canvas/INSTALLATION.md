@@ -2,6 +2,8 @@
 
 This guide will walk you through installing the Rig Augmented Canvas plugin for Obsidian using BRAT (Beta Reviewer's Auto-update Tool).
 
+> **Video Guides Available**: For visual learners, we've created video tutorials that demonstrate the [installation process](guides/installing_via_brat.mp4) and [setting up your API key](guides/settings_use.mp4). You can find these videos in the README.md file.
+
 ## Installing BRAT
 
 1. Open Obsidian

@@ -4,6 +4,8 @@ A powerful Obsidian plugin that enhances the Canvas experience with AI capabilit
 
 ## Table of Contents
 
+- [Installation](#installation)
+- [Video Guides](#video-guides)
 - [Architecture Overview](#architecture-overview)
 - [Project Structure](#project-structure)
 - [Components](#components)
@@ -11,7 +13,6 @@ A powerful Obsidian plugin that enhances the Canvas experience with AI capabilit
   - [TypeScript Plugin](#typescript-plugin)
   - [Backend Service](#backend-service)
 - [Building the Project](#building-the-project)
-- [Installation](#installation)
 - [Development Guide](#development-guide)
 - [API Reference](#api-reference)
 - [Troubleshooting](#troubleshooting)
@@ -171,6 +172,22 @@ The easiest way to install Rig Augmented Canvas is using the BRAT (Beta Reviewer
 5. Enable the plugin in Obsidian's Community Plugins settings
 
 For detailed step-by-step instructions, see the [INSTALLATION.md](INSTALLATION.md) guide.
+
+## Video Guides
+
+To help you get started quickly, we've created video guides that demonstrate the installation and setup process:
+
+### Installing via BRAT
+
+This video shows how to install the BRAT plugin and use it to install Rig Augmented Canvas:
+
+<video src="guides/installing_via_brat.mp4" controls width="100%"></video>
+
+### Setting Up Your API Key
+
+This video demonstrates how to configure the plugin with your OpenAI API key:
+
+<video src="guides/settings_use.mp4" controls width="100%"></video>
 
 ### Manual Installation
 
