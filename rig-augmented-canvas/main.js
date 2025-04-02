@@ -1261,7 +1261,11 @@ var RigApiClient = class {
       if (this.settings.openaiApiKey) {
         const config = this.wasmModule.get_config();
         config.model_name = "o3-mini";
-        await this.wasmModule.update_model_config(JSON.stringify(config));
+        // Ensure provider field is included in the config
+    if (!config.provider) {
+      config.provider = 0; // 0 corresponds to ModelProvider.OpenAI
+    }
+    await this.wasmModule.update_model_config(JSON.stringify(config));
       }
       this.wasmInitialized = true;
       this.logDebug("WebAssembly module initialized");

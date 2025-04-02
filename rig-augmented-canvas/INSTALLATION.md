@@ -81,9 +81,9 @@ If you're developing or building this plugin, follow these additional steps to e
    cp -r pkg/* pkg/
    ```
 
-3. Fix the WebAssembly paths in the main.js file:
+3. Fix the WebAssembly paths and configuration in the main.js file:
    ```bash
-   node fix-wasm-paths.js
+   node fix-wasm-config.js
    ```
 
 4. Create a zip file for the release:
